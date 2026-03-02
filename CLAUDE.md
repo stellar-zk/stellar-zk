@@ -4,28 +4,28 @@
 
 ```bash
 # Build the workspace
-/Users/salazar/.cargo/bin/cargo build
+cargo build
 
 # Run CLI
-/Users/salazar/.cargo/bin/cargo run -- <subcommand>
+cargo run -- <subcommand>
 
 # Example: init a project
-/Users/salazar/.cargo/bin/cargo run -- init myapp --backend groth16
+cargo run -- init myapp --backend groth16
 ```
 
-If `cargo` is not found, source the env first: `source "$HOME/.cargo/env"`.
+If `cargo` is not found, source the env first: `source "$HOME/.cargo/env"` or use the absolute path `$HOME/.cargo/bin/cargo`.
 
 ## Tests
 
 ```bash
 # All tests
-/Users/salazar/.cargo/bin/cargo test
+cargo test
 
 # By crate
-/Users/salazar/.cargo/bin/cargo test -p stellar-zk-groth16    # 9 tests (serializer)
-/Users/salazar/.cargo/bin/cargo test -p stellar-zk-ultrahonk   # 6 tests
-/Users/salazar/.cargo/bin/cargo test -p stellar-zk-risc0       # 5 tests (seal validation)
-/Users/salazar/.cargo/bin/cargo test -p stellar-zk-core        # core types
+cargo test -p stellar-zk-groth16    # 9 tests (serializer)
+cargo test -p stellar-zk-ultrahonk   # 6 tests
+cargo test -p stellar-zk-risc0       # 5 tests (seal validation)
+cargo test -p stellar-zk-core        # core types
 ```
 
 No external services or Docker needed for unit tests. Tests cover BN254 serialization, seal validation, and proof layout.

@@ -14,8 +14,31 @@ Built for Stellar Protocol 25, which introduced native BN254 host functions (`g1
 
 ---
 
+## Team
+
+| | Name | GitHub |
+|---|------|--------|
+| | Sebastián Salazar | [@salazarsebas](https://github.com/salazarsebas) |
+| | Fabian Sanchez | [@FabianSanchezD](https://github.com/FabianSanchezD) |
+
+---
+
+## Reference Repositories
+
+This project builds on prior work and reference implementations across the Stellar ZK ecosystem:
+
+| Backend | Repository |
+|---------|------------|
+| Groth16 | [stellar/soroban-examples — groth16_verifier](https://github.com/stellar/soroban-examples/tree/main/groth16_verifier) |
+| RISC Zero | [NethermindEth/stellar-risc0-verifier](https://github.com/NethermindEth/stellar-risc0-verifier/) |
+| Noir UltraHonk | [yugocabrio/rs-soroban-ultrahonk](https://github.com/yugocabrio/rs-soroban-ultrahonk) |
+
+---
+
 ## Table of Contents
 
+- [Team](#team)
+- [Reference Repositories](#reference-repositories)
 - [Features](#features)
 - [Quick Start](#quick-start)
 - [Installation](#installation)
