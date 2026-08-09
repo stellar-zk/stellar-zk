@@ -1,6 +1,6 @@
 # stellar-zk
 
-**ZK DevKit for Stellar/Soroban** — unified CLI for Groth16, UltraHonk, and RISC Zero.
+**ZK & privacy tooling for Stellar/Soroban** — a unified CLI for Groth16, UltraHonk, and RISC Zero, and the foundation for a growing set of privacy-preserving service templates built specifically for Stellar.
 
 [![CI](https://github.com/salazarsebas/stellar-zk/actions/workflows/ci.yml/badge.svg)](https://github.com/salazarsebas/stellar-zk/actions/workflows/ci.yml)
 [![crates.io](https://img.shields.io/crates/v/stellar-zk.svg)](https://crates.io/crates/stellar-zk)
@@ -8,9 +8,11 @@
 [![Rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](https://www.rust-lang.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-The easiest way to build, prove, and verify zero-knowledge proofs on the [Stellar](https://stellar.org/) network. stellar-zk orchestrates ZK proof systems for [Soroban](https://soroban.stellar.org/) smart contracts — handling circuit compilation, trusted setup, proof generation, contract deployment, and on-chain verification so you can focus on your ZK application logic.
+The easiest way to build, prove, and verify zero-knowledge proofs on the [Stellar](https://stellar.org/) network. stellar-zk orchestrates ZK proof systems for [Soroban](https://soroban.stellar.org/) smart contracts — handling circuit compilation, trusted setup, proof generation, contract deployment, and on-chain verification so you can focus on your ZK application logic instead of hand-rolling BN254 point serialization and verifier plumbing.
 
-Built for Stellar Protocol 25, which introduced native BN254 host functions (`g1_add`, `g1_mul`, `g1_neg`, `fr_from_bytes`, `pairing_check`) enabling on-chain ZK verification within the 100M CPU instruction budget. Groth16 verification costs ~12M CPU instructions (~1,100 stroops) — just 12% of the budget.
+Built for Stellar Protocol 25, which shipped native BN254 host functions (`g1_add`, `g1_mul`, `pairing_check`, point/scalar `from_bytes` constructors) enabling on-chain ZK verification within the 100M CPU instruction budget. Groth16 verification costs ~12M CPU instructions (~1,100 stroops) — just 12% of the budget.
+
+**Where this is going**: Stellar's protocol team has been explicit that privacy stays an application-layer, ecosystem-owned concern rather than a base-protocol feature — see [ROADMAP.md](ROADMAP.md) for the primitives this depends on and why that framing holds. stellar-zk is building toward a small set of concrete privacy and compliance services on top of the existing multi-backend pipeline — starting with anonymous voting/private signaling and Proof-of-Reserve circuit templates. See [Roadmap Highlights](#roadmap-highlights) below.
 
 ---
 
@@ -40,6 +42,7 @@ This project builds on prior work and reference implementations across the Stell
 - [Team](#team)
 - [Reference Repositories](#reference-repositories)
 - [Features](#features)
+- [Roadmap Highlights](#roadmap-highlights)
 - [Quick Start](#quick-start)
 - [Installation](#installation)
 - [Backends](#backends)
@@ -68,6 +71,19 @@ This project builds on prior work and reference implementations across the Stell
 - **Optimization profiles**: development (fast builds), testnet (balanced), stellar-production (aggressive)
 - **Artifact persistence**: build artifacts link all CLI commands without manual path wiring
 - **Anti-replay protection**: SHA256-based nullifiers prevent double verification
+
+---
+
+## Roadmap Highlights
+
+stellar-zk's near-term direction, in priority order (full detail and rationale in [ROADMAP.md](ROADMAP.md)):
+
+1. **Core correctness fix** — the generated verifier contracts are being brought in line with the real `soroban-sdk` BN254 API, with CI now scaffolding and compiling a fresh contract per backend on every change so this class of issue can't ship silently again.
+2. **Anonymous voting & private signaling** — a circuit template for proving group membership and casting a signal without revealing identity, with double-signaling prevented via the nullifier tracking stellar-zk's contracts already implement.
+3. **Proof of Reserve** — a circuit template for proving reserves cover liabilities using a Merkle-sum-tree with range-checked balances, without revealing individual holdings. Aimed squarely at RWA and institutional-DeFi use cases.
+4. **Developer experience polish and production-readiness hardening** — interactive commands, real trusted-setup support, and audit-ready contract templates, so the templates above are safe to take to mainnet.
+
+These services are being built specifically for Stellar's protocol characteristics (BN254/Poseidon host functions, Soroban resource limits) — not ported wholesale from tooling built for a different chain's execution model.
 
 ---
 

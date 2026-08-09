@@ -1,5 +1,12 @@
 # CLAUDE.md — stellar-zk
 
+## Current State & Direction
+
+- **Known-fixed, unmerged bug**: all three generated verifier contract templates (`groth16_verifier`, `ultrahonk_verifier`, `risc0_verifier`) called a `Bn254` API (`env.crypto().bn254().g1_from_bytes/.g2_from_bytes/.fr_from_bytes/.g1_neg(...)`) that never existed in any real `soroban-sdk` release — the pin (`"23.4"`) predates the `bn254` module (introduced in `soroban-sdk` 25.0.0), and CI never compiled the *generated* contracts, only the 5 workspace crates. A fix exists (real API: associated `from_bytes` constructors on `Bn254G1Affine`/`Bn254G2Affine`/`Bn254Fr`, `Neg` operator, pin bumped to `soroban-sdk = "26"`) plus a new `scaffold-verify` CI job that builds a freshly scaffolded contract per backend. **Before assuming the templates compile, check whether this fix has been merged to `main`** — if `git log` doesn't show it, the bug is still live.
+- **Strategic direction**: stellar-zk is positioned as Stellar's ZK/privacy tooling layer — not a generic multi-chain devkit. This is grounded in SDF's own public strategy (privacy is deliberately application-layer and ecosystem-owned, not a base-protocol feature — see the Meridian 2025 keynote cited in the brief below) and in real competitive research (no SCF-funded project unifies multiple ZK backends into reusable tooling; every funded privacy player hand-builds the pipeline stellar-zk automates).
+- **Flagship services being built next** (see `ROADMAP.md` Phase 7A): an anonymous-voting/private-signaling circuit template (Semaphore-style, reuses the existing Groth16 + nullifier pipeline) and a Proof-of-Reserve circuit template (Merkle-sum-tree, targets the RWA/institutional-DeFi vertical). Full rationale, evidence, and an evidence-scoped competitive/protocol analysis: `docs/briefs/brief-stellar-zk-2026-08-08/brief.md` and its `addendum.md`.
+- **Do not describe the fixed feature set or the flagship services as already shipped** — they are roadmap items until `ROADMAP.md` checkboxes are actually checked.
+
 ## Build & Run
 
 ```bash
