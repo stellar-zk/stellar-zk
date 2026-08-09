@@ -2,6 +2,7 @@
 
 use soroban_sdk::{
     contract, contractimpl, contracterror, contracttype,
+    crypto::bn254::{Bn254G1Affine, Bn254G2Affine},
     symbol_short, Bytes, BytesN, Env, Vec,
 };
 
@@ -89,15 +90,16 @@ impl {{contract_name}} {
         let w_bytes = proof_blob.slice((proof_len - 128)..(proof_len - 64));
         let w_prime_bytes = proof_blob.slice((proof_len - 64)..proof_len);
 
-        let w = bn254.g1_from_bytes(&w_bytes);
-        let w_prime = bn254.g1_from_bytes(&w_prime_bytes);
+        let w = Bn254G1Affine::from_bytes(w_bytes.try_into().unwrap());
+        let w_prime = Bn254G1Affine::from_bytes(w_prime_bytes.try_into().unwrap());
 
         // Parse the G2 SRS points from the VK tail:
         //   [1]G2 = vk[vk_len-256..vk_len-128]
         //   [x]G2 = vk[vk_len-128..vk_len]
         let vk_len = vk.len();
-        let g2_one = bn254.g2_from_bytes(&vk.slice((vk_len - 256)..(vk_len - 128)));
-        let g2_x = bn254.g2_from_bytes(&vk.slice((vk_len - 128)..vk_len));
+        let g2_one =
+            Bn254G2Affine::from_bytes(vk.slice((vk_len - 256)..(vk_len - 128)).try_into().unwrap());
+        let g2_x = Bn254G2Affine::from_bytes(vk.slice((vk_len - 128)..vk_len).try_into().unwrap());
 
         // Compute the aggregate commitment P from proof body.
         // For the KZG opening check, we accumulate all commitments from the
@@ -112,7 +114,9 @@ impl {{contract_name}} {
         if p_offset + 64 > proof_len - 128 {
             return Err(VerifierError::InvalidProofLength);
         }
-        let p = bn254.g1_from_bytes(&proof_blob.slice(p_offset..(p_offset + 64)));
+        let p = Bn254G1Affine::from_bytes(
+            proof_blob.slice(p_offset..(p_offset + 64)).try_into().unwrap(),
+        );
 
         // KZG pairing check:
         //   e(P, [1]G2) == e(W + W', [x]G2)
@@ -120,7 +124,7 @@ impl {{contract_name}} {
         // Equivalently:
         //   e(P, [1]G2) * e(-(W + W'), [x]G2) == 1
         let w_sum = bn254.g1_add(&w, &w_prime);
-        let neg_w_sum = bn254.g1_neg(&w_sum);
+        let neg_w_sum = -w_sum;
 
         let g1_vec = Vec::from_array(&env, [p, neg_w_sum]);
         let g2_vec = Vec::from_array(&env, [g2_one, g2_x]);
