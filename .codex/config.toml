@@ -1,0 +1,4 @@
+
+[mcp_servers.stellar-raven]
+command = "npx"
+args = ["-y", "mcp-remote", "https://raven.stellar.buzz/mcp"]

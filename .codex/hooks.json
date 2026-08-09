@@ -1,0 +1,46 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "STELLAR_TRACE_AGENT=codex /Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/trace-skill.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/capture-prompt.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/reprompt.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/loop-session-start.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

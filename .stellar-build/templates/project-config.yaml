@@ -1,0 +1,14 @@
+# stellar-build project config. Copy to {project}/.stellar-build/bmm/config.yaml
+# (any persona will do this for you if you ask to "set up project config").
+# Every key is optional — anything missing falls back to this install's global
+# config at /Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/config.yaml, then to built-in defaults. Paths
+# resolve relative to the project root.
+
+# project_name: my-project
+# planning_artifacts: docs                # PRDs, briefs, architecture, epics
+# implementation_artifacts: docs/stories  # stories, sprint-status.yaml
+# project_knowledge: docs                 # extra context skills may scan
+# user_name: Your Name                    # per-project override of the global value
+# communication_language: English
+# document_output_language: English
+# user_skill_level: intermediate

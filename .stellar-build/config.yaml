@@ -1,0 +1,7 @@
+# stellar-build global config. Skills read these values in any project that
+# has no .stellar-build/bmm/config.yaml of its own. Edit freely — updates
+# never overwrite this file.
+user_name: "Sebastián Salazar"
+communication_language: English
+document_output_language: English
+user_skill_level: intermediate

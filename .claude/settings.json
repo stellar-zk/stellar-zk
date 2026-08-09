@@ -1,0 +1,76 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Glob",
+      "Grep"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/trace-skill.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/capture-prompt.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/reprompt.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/loop-session-start.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/stop-trace.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/sebastiansalazar/Desktop/stellar-zk/.stellar-build/hooks/session-end.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
