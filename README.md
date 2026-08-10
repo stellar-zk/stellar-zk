@@ -307,7 +307,8 @@ Three tiers of estimation:
 
 ### All backends
 
-- [Rust](https://rustup.rs/) 1.85.0+
+- [Rust](https://rustup.rs/) 1.85.0+ to build and run the `stellar-zk` CLI itself
+- **Rust 1.91.0+ to compile the generated verifier contract** (`stellar-zk build` / `cargo build` inside `contracts/verifier`) — the contract depends on `soroban-sdk` 26+, which declares `rust-version = "1.91.0"`. Run `rustup update` if `cargo build` in the scaffolded project fails with an MSRV error.
 - [Stellar CLI](https://developers.stellar.org/docs/tools/developer-tools/cli/stellar-cli) (for deploy and call commands)
 
 ### Groth16

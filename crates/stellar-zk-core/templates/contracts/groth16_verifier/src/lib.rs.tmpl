@@ -2,6 +2,7 @@
 
 use soroban_sdk::{
     contract, contractimpl, contracterror, contracttype,
+    crypto::bn254::{Bn254Fr, Bn254G1Affine, Bn254G2Affine},
     symbol_short, Bytes, BytesN, Env, Vec,
 };
 
@@ -72,15 +73,15 @@ impl {{contract_name}} {
         let bn254 = env.crypto().bn254();
 
         // Deserialize proof points
-        let a = bn254.g1_from_bytes(&a_bytes);
-        let b = bn254.g2_from_bytes(&b_bytes);
-        let c = bn254.g1_from_bytes(&c_bytes);
+        let a = Bn254G1Affine::from_bytes(a_bytes.try_into().unwrap());
+        let b = Bn254G2Affine::from_bytes(b_bytes.try_into().unwrap());
+        let c = Bn254G1Affine::from_bytes(c_bytes.try_into().unwrap());
 
         // Parse VK: alpha(64) | beta(128) | gamma(128) | delta(128) | ic_count(4) | ic[](64 each)
-        let alpha = bn254.g1_from_bytes(&vk.slice(0..64));
-        let beta = bn254.g2_from_bytes(&vk.slice(64..192));
-        let gamma = bn254.g2_from_bytes(&vk.slice(192..320));
-        let delta = bn254.g2_from_bytes(&vk.slice(320..448));
+        let alpha = Bn254G1Affine::from_bytes(vk.slice(0..64).try_into().unwrap());
+        let beta = Bn254G2Affine::from_bytes(vk.slice(64..192).try_into().unwrap());
+        let gamma = Bn254G2Affine::from_bytes(vk.slice(192..320).try_into().unwrap());
+        let delta = Bn254G2Affine::from_bytes(vk.slice(320..448).try_into().unwrap());
 
         let ic_count = {
             let b0 = vk.get(448).unwrap() as u32;
@@ -92,20 +93,27 @@ impl {{contract_name}} {
 
         // Compute vk_x = ic[0] + sum(public_input[i] * ic[i+1])
         let ic_base = 452u32;
-        let mut vk_x = bn254.g1_from_bytes(&vk.slice(ic_base..(ic_base + 64)));
+        let mut vk_x =
+            Bn254G1Affine::from_bytes(vk.slice(ic_base..(ic_base + 64)).try_into().unwrap());
 
         let num_inputs = public_inputs.len() / 32;
         for i in 0..num_inputs {
             let input_offset = i * 32;
-            let fr = bn254.fr_from_bytes(&public_inputs.slice(input_offset..(input_offset + 32)));
+            let fr = Bn254Fr::from_bytes(
+                public_inputs
+                    .slice(input_offset..(input_offset + 32))
+                    .try_into()
+                    .unwrap(),
+            );
             let ic_offset = ic_base + ((i + 1) * 64);
-            let ic_point = bn254.g1_from_bytes(&vk.slice(ic_offset..(ic_offset + 64)));
+            let ic_point =
+                Bn254G1Affine::from_bytes(vk.slice(ic_offset..(ic_offset + 64)).try_into().unwrap());
             let term = bn254.g1_mul(&ic_point, &fr);
             vk_x = bn254.g1_add(&vk_x, &term);
         }
 
         // Pairing check: e(-A, B) * e(alpha, beta) * e(vk_x, gamma) * e(C, delta) == 1
-        let neg_a = bn254.g1_neg(&a);
+        let neg_a = -a;
 
         let g1_vec = Vec::from_array(&env, [neg_a, alpha, vk_x, c]);
         let g2_vec = Vec::from_array(&env, [b, beta, gamma, delta]);

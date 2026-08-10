@@ -50,3 +50,61 @@ jobs:
 
       - name: Format check
         run: cargo fmt --all -- --check
+
+  scaffold-verify:
+    name: Scaffold & build verifier contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # soroban-sdk 26+ (required for the real bn254 API, see the fix below)
+      # declares rust-version = "1.91.0" — this must stay ahead of the 1.85.0
+      # toolchain used by the `check` job above, which only builds the 5
+      # workspace crates and doesn't depend on soroban-sdk directly.
+      - name: Install Rust 1.91.0
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.91.0"
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-scaffold-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-scaffold-
+
+      - name: Build stellar-zk CLI
+        run: cargo build --release -p stellar-zk
+
+      # The generated contract crates are independent Cargo packages (their own
+      # soroban-sdk dependency, not part of this workspace) rendered at runtime
+      # from the include_str!-embedded templates. `cargo build --workspace`
+      # above never compiles them, so this is the only CI signal that catches a
+      # broken template (e.g. a soroban-sdk API drift) before it ships.
+      #
+      # RUSTFLAGS is reset here (workspace default is "-D warnings") because the
+      # generated contracts carry known, pre-existing lint warnings that are out
+      # of scope for this job — it only asserts that each scaffolded contract
+      # compiles.
+      - name: Scaffold and build generated verifier contracts
+        env:
+          RUSTFLAGS: ""
+        run: |
+          set -euo pipefail
+          BIN="$GITHUB_WORKSPACE/target/release/stellar-zk"
+          SCRATCH="$RUNNER_TEMP/stellar-zk-scaffold"
+          rm -rf "$SCRATCH"
+          mkdir -p "$SCRATCH"
+          for backend in groth16 ultrahonk risc0; do
+            echo "::group::stellar-zk init ($backend)"
+            (cd "$SCRATCH" && "$BIN" init "${backend}app" --backend "$backend")
+            echo "::endgroup::"
+            echo "::group::cargo build (${backend} verifier contract)"
+            (cd "$SCRATCH/${backend}app/contracts/verifier" && cargo build)
+            echo "::endgroup::"
+          done

@@ -81,7 +81,20 @@ This document outlines the development roadmap for stellar-zk. Items are organiz
 
 ## Planned
 
-### Phase 7: Developer Experience
+### Immediate — blocking
+
+Nothing below ships on top of an unmerged core fix.
+
+- [ ] **Merge the Bn254 verifier-contract fix.** All three generated verifier contracts (`groth16_verifier`, `ultrahonk_verifier`, `risc0_verifier`) called a `Bn254` API that never existed in any real `soroban-sdk` release — the pin (`"23.4"`) predates the `bn254` module entirely (introduced in `soroban-sdk` 25.0.0). Fixed against the real API (associated `from_bytes` constructors, `Neg` operator, `g1_add`/`g1_mul`/`pairing_check`), pinned to `soroban-sdk = "26"`, verified via a real `cargo build` of all three scaffolded backends. A new `scaffold-verify` CI job now builds a freshly scaffolded contract per backend so this class of bug can't ship silently again — closes the exact gap that let it through (CI previously only built the 5 workspace crates, never the templates that only materialize when a user runs `init`).
+
+### Phase 7A: Privacy & Compliance Service Templates
+
+Two flagship circuit templates identified through competitive and protocol research (see `docs/briefs/brief-stellar-zk-2026-08-08/`) as the highest-leverage next services to offer — both build on the existing Groth16/nullifier pipeline rather than requiring new infrastructure.
+
+- [ ] **Anonymous voting / private signaling template** (prove group membership + a nullifier against double-signaling, without revealing which member acted). Reuses stellar-zk's existing Groth16 pipeline and nullifier tracking almost unchanged. Poseidon hashing (CAP-0075) is confirmed live at the protocol level; the exact `soroban-sdk` API surface for it still needs verification before this is scoped as "easy," the same way the Bn254 API needed verifying.
+- [ ] **Proof-of-Reserve template** (Merkle-sum-tree with range-checked leaves, proving total reserves ≥ total liabilities without revealing individual balances). Directly serves the RWA/institutional-DeFi vertical. Validated as buildable on this exact stack (Circom + Groth16 + BN254) by an existing independent implementation already live on Stellar testnet.
+
+### Phase 7B: Developer Experience
 
 Polish the CLI and make the tool easier to use for newcomers.
 
@@ -96,10 +109,10 @@ Polish the CLI and make the tool easier to use for newcomers.
 
 ### Phase 8: Production Readiness
 
-Features required for mainnet deployments.
+Features required for mainnet deployments. The first two items are elevated in priority above the remainder of Phase 7B — a second correctness gap matters more than DX polish, and any service template that ships needs a real trusted setup and real VK behind it.
 
-- [ ] Production trusted setup support (import community Powers of Tau files for Groth16)
-- [ ] VK extraction from RISC Zero host at build time (replace placeholder with real universal VK)
+- [ ] **(elevated)** Production trusted setup support (import community Powers of Tau files for Groth16)
+- [ ] **(elevated)** VK extraction from RISC Zero host at build time (replace placeholder with real universal VK)
 - [ ] Contract upgrade support (versioned VKs, migration paths)
 - [ ] Gas profiling: detailed breakdown of BN254 operation costs per verify() call
 - [ ] WASM size optimization reports (which functions contribute most to size)
@@ -112,7 +125,7 @@ Extend the backends with advanced capabilities.
 
 - [ ] Recursive proof composition (prove verification of a proof)
 - [ ] Batch verification (verify multiple proofs in a single transaction)
-- [ ] Custom circuit support for UltraHonk (user-defined oracle functions)
+- [ ] Custom circuit support for UltraHonk (user-defined oracle functions) — the hardened version of this, paired with a generic UltraHonk verifier, is the differentiator worth investing in once a Noir-based service (e.g. a provably-fair shuffle/deal template) makes the case concrete rather than speculative
 - [ ] RISC Zero continuation support (segment proofs for long computations)
 - [ ] Groth16 proof aggregation (SnarkPack or similar)
 - [ ] Witness generation from on-chain data (Stellar ledger queries as circuit inputs)
@@ -150,7 +163,7 @@ These are ideas being evaluated but not yet committed to:
 - **New backends**: Plonky2, Halo2, SP1 — as Soroban adds new host functions or precompiles
 - **zkLogin**: Stellar account abstraction using ZK proofs of OAuth/OIDC tokens
 - **zkBridge**: Cross-chain light client verification using ZK proofs of block headers
-- **Privacy primitives**: Shielded transfers, confidential assets built on the verifier infrastructure
+- **Privacy primitives**: Shielded transfers, confidential assets, private prediction markets/AMMs built *on* stellar-zk's verifier infrastructure — deliberately not a stellar-zk deliverable itself (these need off-chain relayer infrastructure beyond a local CLI's reach), but tracked here as the kind of application this project should enable
 - **Formal verification**: Machine-checked correctness proofs for the verifier contract templates
 - **Hardware acceleration**: GPU/FPGA support for proof generation via backend plugins
 
@@ -161,7 +174,7 @@ These are ideas being evaluated but not yet committed to:
 stellar-zk follows [Semantic Versioning](https://semver.org/):
 
 - **0.1.x**: Current development. API may change between minor versions.
-- **0.2.0**: Target for Phase 7 completion (developer experience polish).
+- **0.2.0**: Target for the Bn254 fix plus Phase 7A (privacy & compliance service templates) and Phase 7B (developer experience polish).
 - **1.0.0**: Target for Phase 8 completion (production readiness). Stable API commitment.
 
 ---
@@ -170,7 +183,6 @@ stellar-zk follows [Semantic Versioning](https://semver.org/):
 
 Want to help? See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines. The most impactful areas for contribution right now are:
 
-1. **Integration tests** (Phase 6) — help us test the full pipeline
-2. **CI pipeline** (Phase 6) — GitHub Actions setup
-3. **Developer experience** (Phase 7) — CLI polish, error messages, shell completions
-4. **New backend exploration** — prototype implementations for Plonky2, Halo2, or SP1
+1. **Privacy & compliance service templates** (Phase 7A) — the anonymous-voting and Proof-of-Reserve templates are the current flagship priority
+2. **Developer experience** (Phase 7B) — CLI polish, error messages, shell completions
+3. **New backend exploration** — prototype implementations for Plonky2, Halo2, or SP1
