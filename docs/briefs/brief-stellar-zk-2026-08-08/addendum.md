@@ -82,3 +82,34 @@ Candidate service templates, ranked by how unblocked each is against confirmed-l
 2. **Elevate from Phase 8** (production readiness) above the remaining Phase 7 (DX polish) items: production trusted-setup support and real VK extraction for RISC Zero — both matter more once a template ships that people might actually deploy to mainnet, and DX polish (progress bars, shell completions) is lower-stakes than a second correctness gap.
 3. **New near-term phase**: the two flagship verticals from Scope §2-3 (private-voting/Semaphore template, Proof-of-Reserve template) — insert ahead of existing Phase 9 (recursive proofs, batch verification, proof aggregation), which is more speculative and less evidence-backed right now.
 4. **Phase 10** (ecosystem integration — npm wrapper, VS Code extension, template marketplace) stays valid but is lower urgency than shipping the verticals that would populate a template marketplace in the first place.
+
+## F. Business model — professional services on a free core
+
+The brief through §A-E covers product positioning and technical roadmap; it deliberately said nothing about revenue. This section closes that gap, produced in a dedicated business-model session (Justin/business-analyst persona) after being asked directly "is there a business model here."
+
+**Chosen direction**: professional services layered on top of the free, MIT-licensed CLI and templates — not open-core, not a hosted paid product (yet). The CLI stays fully capable for free; what's sold is human time and accountability.
+
+### Revenue streams, ranked by how directly they're evidenced by this session's own work
+
+1. **Paid implementation/integration engagements.** Take a client's circuit and business requirements to a deployed, working verifier contract using stellar-zk. This directly monetizes the exact gap "The Problem" documents — Nethermind hand-built this pipeline for one vertical, the indie PoR builder built it alone; a paying client gets the same outcome without either path.
+2. **Production-readiness / audit review.** This is, concretely, the work already done for free this session: finding that `env.crypto().bn254().g1_neg()` doesn't exist in any real SDK release, reproducing it with an actual `cargo build`, and fixing it against the verified real API. A client with real money behind a mainnet deployment would pay for exactly this level of rigor before shipping. Maps directly to the existing "audit-ready contract templates" line in ROADMAP.md Phase 8.
+3. **Protocol-drift retainer.** The `Bn254` API's shape changed materially across `soroban-sdk` 25 → 26 → 27 (scalar type renamed `Fr` → `Bn254Fr`; MSRV jumped to 1.91.0) within this session's own research window. An institutional client with a deployed contract does not want to discover a breaking API change themselves — a monthly retainer to track and pre-empt exactly this class of drift is a recurring-revenue candidate, not a one-off project.
+4. **Custom circuit development.** For use cases outside the two flagship templates (voting, PoR) — scoped and billed per project, not a standard offering.
+
+### Who actually pays
+
+Not the free-CLI user base (hobbyists, hackathon builders — evidenced by the ~15-20 abandoned single-commit repos found via Electric Capital). Those are the funnel. Paying customers are the segments already named in "Who This Serves": institutional/RWA teams needing Proof-of-Reserve in production (direct line to the GENIUS Act and Zondacrypto evidence in §C), and governance/DAO teams needing private voting in production (direct line to the Semaphore-pattern evidence in §D).
+
+### Costs and the core tension
+
+Cost structure is almost entirely founder/contractor time — a two-person team (per README), low infrastructure cost since clients self-host the CLI and contracts. The real cost is opportunity: every hour on billable service work is an hour not spent building the OSS differentiation (the two flagship templates, the UltraHonk verifier) that makes the services credible in the first place. This needs a conscious allocation decision, not an implicit one.
+
+### Risks specific to this model
+
+- **Revenue ceiling.** Two people selling hours does not scale like software. Either accept this as a deliberate boutique-expertise business, or treat repeated demand for one service (most likely the protocol-drift retainer) as the signal to productize it instead of continuing to sell it manually.
+- **Free-riding.** The core is MIT and already public — nothing stops a better-resourced competitor (including Nethermind, who already has more institutional credibility per SDF's own blog) from offering the identical service on top of the same free tooling. The only real defense is speed and first-hand knowledge of the tool's own failure modes — which is itself a moving target as the SDK keeps changing shape.
+- **Conflict-of-interest optics.** Charging for services on top of a tool marketed as an ecosystem public good invites the question of whether the free tier is deliberately left incomplete to force an upsell. Mitigation is a hard rule, not a hope: the CLI and templates must stay fully correct and complete on their own; only human time (implementation, audit, ongoing tracking) is ever sold.
+
+### Explicitly not decided here
+
+`[ASSUMPTION]` No pricing — no comparable was found in this session's research (SCF award amounts are a grant benchmark, not a services-pricing one, and conflating the two would be a fabricated moat). Recommended next step: validate stream 1 (paid implementation) against a single real prospect before pricing the rest of the menu.

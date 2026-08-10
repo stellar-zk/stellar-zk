@@ -61,6 +61,12 @@ Be precise about what the moat actually is, since none of this is a defensible t
 - **Full vertical privacy applications** (shielded pools with off-chain relayers, AMMs, browser wallets — the Nethermind-private-payments shape: private prediction markets, shielded transfer apps, and similar). These need infrastructure (relayer services, frontends) beyond a local CLI's reach. stellar-zk should be the thing such projects are built *on*, not attempt to become one itself.
 - **A generic UltraHonk verifier**, in this scope — real and valuable, but a harder lift than the two templates above and not blocking them. Sequence it after, once demand for a Noir-based vertical (e.g. a provably-fair shuffle/deal verification template) makes the investment concrete rather than speculative.
 
+## Business Model
+
+The CLI and templates stay MIT and free — that's the adoption hook, not the revenue. Revenue comes from professional services sold to teams who need the pipeline working in production rather than just available: paid implementation/integration engagements (taking a client's circuit to a deployed verifier contract), production-readiness/audit reviews (the exact class of work this week's Bn254 fix already demonstrated), and a protocol-drift retainer (tracking `soroban-sdk` API changes like the one that caused this week's bug, so a client's deployed contract doesn't silently break). Paying customers are institutional/RWA teams needing Proof-of-Reserve in production and governance/DAO teams needing private voting in production — not the hobbyist/hackathon users the free CLI mostly reaches, who function as the funnel rather than the customer.
+
+Two risks specific to this model, named rather than hidden: a two-person services business has a hard revenue ceiling (billable hours), so services revenue should be treated as either a deliberate boutique-expertise choice or a bridge to productizing whatever service repeats (e.g., the protocol-drift retainer, if sold more than once, is a signal to build a monitoring product instead of re-selling the same manual service); and because the core is MIT, a better-resourced competitor can legally offer the identical service on top of the same free tooling — the defense is speed and first-hand knowledge of the tool's own failure modes, not exclusivity. `[ASSUMPTION]` No pricing is proposed here — no comparable was found in this session's research, and the recommended next step is validating the first service (paid implementation) against one real prospect before pricing the rest. Full analysis: `addendum.md` §F.
+
 ## Success Criteria
 
 - **Correctness (immediate)**: the new `scaffold-verify` CI job stays green — a scaffolded contract for all three backends compiles on every PR, closing the exact blind spot that let this week's bug ship silently.
@@ -73,4 +79,4 @@ If this works, stellar-zk becomes the default first stop for any team building p
 
 ---
 
-*Supporting detail — the full competitive-landscape table, CAP citations, Proof-of-Reserve scheme comparison, and the service feasibility analysis — lives in `addendum.md` in this folder.*
+*Supporting detail — the full competitive-landscape table, CAP citations, Proof-of-Reserve scheme comparison, the service feasibility analysis, and the full business-model deep dive — lives in `addendum.md` in this folder.*
