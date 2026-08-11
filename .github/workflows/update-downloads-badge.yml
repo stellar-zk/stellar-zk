@@ -15,10 +15,11 @@ jobs:
       - name: Compute combined crates.io downloads
         id: downloads
         run: |
+          set -euo pipefail
           total=0
           for crate in stellar-zk stellar-zk-core stellar-zk-groth16 stellar-zk-ultrahonk stellar-zk-risc0; do
             count=$(curl -sf -H "User-Agent: stellar-zk-badge-bot (github-actions)" \
-              "https://crates.io/api/v1/crates/$crate" | jq '.crate.downloads')
+              "https://crates.io/api/v1/crates/$crate" | jq -e '.crate.downloads')
             total=$((total + count))
           done
           echo "total=$total" >> "$GITHUB_OUTPUT"
