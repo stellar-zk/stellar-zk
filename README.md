@@ -4,6 +4,7 @@
 
 [![CI](https://github.com/salazarsebas/stellar-zk/actions/workflows/ci.yml/badge.svg)](https://github.com/salazarsebas/stellar-zk/actions/workflows/ci.yml)
 [![crates.io](https://img.shields.io/crates/v/stellar-zk.svg)](https://crates.io/crates/stellar-zk)
+[![Combined downloads](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/stellar-zk/stellar-zk/badges/badges/downloads.json)](#crates)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](https://www.rust-lang.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -23,6 +24,22 @@ Built for Stellar Protocol 25, which introduced native BN254 host functions (`g1
 
 ---
 
+## Crates
+
+stellar-zk is published as five crates on crates.io. Each badge below reflects that crate's live download count.
+
+| Crate | Description | Downloads |
+|---|---|---|
+| [`stellar-zk`](https://crates.io/crates/stellar-zk) | CLI binary | [![Downloads](https://img.shields.io/crates/d/stellar-zk.svg)](https://crates.io/crates/stellar-zk) |
+| [`stellar-zk-core`](https://crates.io/crates/stellar-zk-core) | Shared library: `ZkBackend` trait, config, templates | [![Downloads](https://img.shields.io/crates/d/stellar-zk-core.svg)](https://crates.io/crates/stellar-zk-core) |
+| [`stellar-zk-groth16`](https://crates.io/crates/stellar-zk-groth16) | Groth16 backend (Circom) | [![Downloads](https://img.shields.io/crates/d/stellar-zk-groth16.svg)](https://crates.io/crates/stellar-zk-groth16) |
+| [`stellar-zk-ultrahonk`](https://crates.io/crates/stellar-zk-ultrahonk) | UltraHonk backend (Noir) | [![Downloads](https://img.shields.io/crates/d/stellar-zk-ultrahonk.svg)](https://crates.io/crates/stellar-zk-ultrahonk) |
+| [`stellar-zk-risc0`](https://crates.io/crates/stellar-zk-risc0) | RISC Zero backend | [![Downloads](https://img.shields.io/crates/d/stellar-zk-risc0.svg)](https://crates.io/crates/stellar-zk-risc0) |
+
+Combined downloads across all five crates: [![Combined downloads](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/stellar-zk/stellar-zk/badges/badges/downloads.json)](https://crates.io/crates/stellar-zk). This total is recomputed hourly by [`update-downloads-badge.yml`](.github/workflows/update-downloads-badge.yml) directly from the crates.io API, not a static number.
+
+---
+
 ## Reference Repositories
 
 This project builds on prior work and reference implementations across the Stellar ZK ecosystem:
@@ -38,6 +55,7 @@ This project builds on prior work and reference implementations across the Stell
 ## Table of Contents
 
 - [Team](#team)
+- [Crates](#crates)
 - [Reference Repositories](#reference-repositories)
 - [Features](#features)
 - [Quick Start](#quick-start)
