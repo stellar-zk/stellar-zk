@@ -1,0 +1,49 @@
+name: Update downloads badge
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute combined crates.io downloads
+        id: downloads
+        run: |
+          total=0
+          for crate in stellar-zk stellar-zk-core stellar-zk-groth16 stellar-zk-ultrahonk stellar-zk-risc0; do
+            count=$(curl -sf -H "User-Agent: stellar-zk-badge-bot (github-actions)" \
+              "https://crates.io/api/v1/crates/$crate" | jq '.crate.downloads')
+            total=$((total + count))
+          done
+          echo "total=$total" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout badges branch
+        uses: actions/checkout@v4
+        with:
+          ref: badges
+
+      - name: Write badge JSON
+        run: |
+          mkdir -p badges
+          cat > badges/downloads.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "crates.io downloads",
+            "message": "${{ steps.downloads.outputs.total }} total",
+            "color": "blue"
+          }
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add badges/downloads.json
+          git diff --cached --quiet || git commit -m "chore: update combined downloads badge [skip ci]"
+          git push
