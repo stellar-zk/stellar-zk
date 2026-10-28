@@ -393,6 +393,10 @@ stellar-zk prove --input inputs/input.json --output proofs/my_proof.bin
 | `--input`, `-i` | *(required)* | Path to input JSON |
 | `--output`, `-o` | auto | Output path for proof |
 
+Relative output paths are resolved from the current working directory. When
+`--output` is supplied, the proof is also written to that path; the backend's
+default proof file and `proofs/public_inputs.json` remain in the project directory.
+
 ### `stellar-zk deploy`
 
 Deploy the verifier contract.

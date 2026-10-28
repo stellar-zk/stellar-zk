@@ -1109,6 +1109,7 @@ dependencies = [
  "stellar-zk-groth16",
  "stellar-zk-risc0",
  "stellar-zk-ultrahonk",
+ "tempfile",
  "tokio",
  "tracing",
  "tracing-subscriber",

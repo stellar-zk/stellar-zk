@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use stellar_zk_core::project;
 
@@ -11,7 +11,7 @@ use crate::output;
 /// Reads the input JSON, computes the witness, and generates a proof using
 /// the build artifacts (proving key, circuit). Outputs a Soroban-compatible
 /// proof binary and public inputs file.
-pub async fn run(config_path: &Path, input_path: &Path, _output_path: Option<&Path>) -> Result<()> {
+pub async fn run(config_path: &Path, input_path: &Path, output_path: Option<&Path>) -> Result<()> {
     output::print_header("stellar-zk prove");
 
     let project_dir = config_path.parent().unwrap_or(Path::new(".")).to_path_buf();
@@ -53,11 +53,16 @@ pub async fn run(config_path: &Path, input_path: &Path, _output_path: Option<&Pa
         .prove(&project_dir, &build_artifacts, input_path)
         .await?;
 
+    let proof_path = if let Some(path) = output_path {
+        std::fs::write(path, &proof_artifacts.proof)
+            .with_context(|| format!("failed to write proof to {}", path.display()))?;
+        path
+    } else {
+        &proof_artifacts.proof_path
+    };
+
     output::print_success("Proof generated");
-    output::print_key_value(
-        "Proof file",
-        &proof_artifacts.proof_path.display().to_string(),
-    );
+    output::print_key_value("Proof file", &proof_path.display().to_string());
     output::print_key_value(
         "Proof size",
         &format!("{} bytes", proof_artifacts.proof.len()),
