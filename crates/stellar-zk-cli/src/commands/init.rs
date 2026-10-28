@@ -52,7 +52,8 @@ pub async fn run(
 
     // Generate configs
     output::print_step(2, 4, "Writing configuration files");
-    let project_config = ProjectConfig::default_for_backend(name, &backend_name);
+    let mut project_config = ProjectConfig::default_for_backend(name, &backend_name);
+    project_config.profile = profile.as_str().to_owned();
     let backend_config = BackendConfig::default_for_backend(&backend_name);
     project::write_configs(project_dir, &project_config, &backend_config)?;
 
